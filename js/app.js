@@ -37,15 +37,47 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-
 var Player = function() {
     this.sprite = 'images/char-pink-girl.png';
+    this.startingPos();
+};
+
+Player.prototype.startingPos = function() {
     this.x = 200;
     this.y = 380;
-}
+};
 
 Player.prototype.update = function() {
+
+    // Store player and enemy dimensions
+    var width = 83,
+        height = 171,
+        // add top to player/enemy y coordinate
+        top = 95;   
+
+    //Detect player's collision with enemies
+    for (var i=0; i < allEnemies.length; i++) {
+        if (this.x < allEnemies[i].x + width &&
+            this.x + width > allEnemies[i].x &&
+            this.y + top < allEnemies[i].y + height &&
+            height + this.y > allEnemies[i].y + top) {
+                //Reset player to starting position
+                player.reset();
+        };
+    };
+
+    //If player reaches water, return to starting position 
+    if (this.y == -20) {
+        player.reset();
+    };
     
+};
+
+// Return player to starting position after 100 ms
+Player.prototype.reset = function() {
+    setTimeout(function() {
+        player.startingPos();
+    }, 100);
 };
 
 Player.prototype.render = function() {
@@ -82,8 +114,10 @@ Player.prototype.handleInput = function(key) {
 var allEnemies = [];
 var enemy;
 for (var i=0; i < 3; i++) {
-    allEnemies.push(enemy = new Enemy( enemyLanes[i] ) );
-}
+    allEnemies.push(
+        enemy = new Enemy( enemyLanes[i] ) 
+    );
+};
 // Place the player object in a variable called player
 var player = new Player();
 
